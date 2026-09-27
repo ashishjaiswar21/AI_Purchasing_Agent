@@ -53,7 +53,7 @@ def gather_data(state: AgentState, config: RunnableConfig):
                f"Inventory: {inv['records']}. Demand forecast: {dem['forecast']}. "
                f"Open POs: {po['open_orders']}. Supplier info: {sup['info']}. "
                f"Budget remaining: {bud.get('remaining')}. Storage (east): {stor['capacity']}.")
-    msg = HumanMessage(content=f"Purchase recommendation review. {context}. Analyze inventory vs demand, open orders, supplier MOQ/lead-time, budget, storage. Reason step by step. Decide: ACCEPT, MODIFY, REJECT, or INVESTIGATE FURTHER. Provide your reasoning clearly.")
+    msg = HumanMessage(content=f"Purchase recommendation review — FINAL DECISION REQUIRED. SKU={sku}, qty={rec.get('qty')}. Data: {context}. You must: (1) state exact numbers checked (inventory total vs qty requested, budget remaining vs estimated cost, storage available, supplier lead time/min order); (2) identify which constraint(s) drove the decision; (3) give a clear one-paragraph justification citing those numbers. Do NOT ask for more data — render the final decision now (ACCEPT / MODIFY / REJECT / INVESTIGATE FURTHER).")
     return {"messages": [msg], "reasoning_trace": trace, "recommendation": rec}
 
 def reason_decide(state: AgentState, config: RunnableConfig):

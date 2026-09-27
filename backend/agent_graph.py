@@ -34,43 +34,44 @@ def gather_data(state: AgentState, config: RunnableConfig):
     rec = state.get("recommendation", {})
     sku = rec.get("sku")
     trace = [f"Gathering data for SKU={sku}, qty={rec.get('qty')}"]
-    # Call tools directly (not LLM) to populate context
     inv = get_inventory(sku)
     dem = get_demand_forecast(sku)
     po = get_open_purchase_orders(sku)
     sup = get_supplier_info(rec.get("supplier_id", "SUP-A"))
     bud = get_available_budget()
-    stor = get_storage_capacity("node_east")  # representative node
+    stor = get_storage_capacity("node_east")
     trace += [
-        f"Inventory: {inv['records']}",
-        f"Forecast: {dem['forecast']}",
-        f"Open POs: {po['open_orders']}",
-        f"Supplier: {sup['info']}",
-        f"Budget remaining: {bud.get('remaining')}",
-        f"Storage (east): {stor['capacity']}"
+        f"Inventory records={len(inv['records'])}",
+        f"Forecast={dem['forecast']}",
+        f"Open POs={len(po['open_orders'])}",
+        f"Supplier={sup['info']['name'] if sup['info'] else 'N/A'}",
+        f"Budget remaining={bud.get('remaining')}",
+        f"Storage east available={stor['capacity'].get('available') if stor['capacity'] else 'N/A'}"
     ]
-    # Build context message
+    # Build rich context message with actual data
     context = (f"SKU={sku}, qty={rec.get('qty')}. "
-               f"Inventory={inv}, Demand={dem}, POs={po}, Supplier={sup}, Budget={bud}, Storage={stor}")
-    msg = HumanMessage(content=f"Review purchase recommendation. {context}. Reason step by step and decide: ACCEPT, MODIFY, REJECT, or INVESTIGATE FURTHER.")
+               f"Inventory: {inv['records']}. Demand forecast: {dem['forecast']}. "
+               f"Open POs: {po['open_orders']}. Supplier info: {sup['info']}. "
+               f"Budget remaining: {bud.get('remaining')}. Storage (east): {stor['capacity']}.")
+    msg = HumanMessage(content=f"Purchase recommendation review. {context}. Analyze inventory vs demand, open orders, supplier MOQ/lead-time, budget, storage. Reason step by step. Decide: ACCEPT, MODIFY, REJECT, or INVESTIGATE FURTHER. Provide your reasoning clearly.")
     return {"messages": [msg], "reasoning_trace": trace, "recommendation": rec}
 
 def reason_decide(state: AgentState, config: RunnableConfig):
-    # Call model with tool-calling capability bound to our tools
     model_with_tools = model.bind_tools(tools)
-    # Use last message; model outputs reasoning + tool calls if needed
     last_msg = state["messages"][-1]
     response = model_with_tools.invoke([last_msg], config)
-    trace = state.get("reasoning_trace", [])
-    trace.append(f"Model reasoning: {response.content}")
-    # Extract decision from content (simple heuristic)
     content = response.content or ""
+    trace = state.get("reasoning_trace", [])
+    # Capture actual model reasoning text (not empty)
+    trace.append(f"Model reasoning: {content[:500]}")
+    # Extract decision
     decision = "INVESTIGATE FURTHER"
     for d in ["ACCEPT", "MODIFY", "REJECT", "INVESTIGATE FURTHER"]:
         if d in content.upper():
             decision = d
             break
-    return {"messages": [AIMessage(content=content)], "reasoning_trace": trace + [f"Decision: {decision}"], "decision": decision}
+    trace.append(f"Decision: {decision}")
+    return {"messages": [AIMessage(content=content)], "reasoning_trace": trace, "decision": decision}
 
 # ---- Build graph ----
 builder = StateGraph(AgentState)

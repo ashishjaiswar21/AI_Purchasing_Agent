@@ -22,43 +22,62 @@ function App() {
     setLoading(false);
   }
 
+  const decisionColor = result?.final_decision === 'ACCEPT' ? '#22c55e' : result?.final_decision === 'REJECT' ? '#ef4444' : result?.final_decision === 'MODIFY' ? '#f59e0b' : '#6366f1';
+
   return (
-    <div style={{ maxWidth: 800, margin: '2rem auto', fontFamily: 'system-ui, sans-serif', padding: '0 1rem' }}>
-      <h1>AI Purchasing Agent — Scenario 1</h1>
-      <form onSubmit={submit} style={{ display: 'flex', gap: 10, alignItems: 'end', marginBottom: '1.5rem' }}>
-        <div>
-          <label>SKU</label><br />
-          <input value={sku} onChange={e => setSku(e.target.value)} style={{ padding: 6, width: 120 }} />
-        </div>
-        <div>
-          <label>Quantity</label><br />
-          <input type="number" value={qty} onChange={e => setQty(e.target.value)} style={{ padding: 6, width: 100 }} />
-        </div>
-        <button type="submit" disabled={loading} style={{ padding: '6px 16px', cursor: 'pointer' }}>
-          {loading ? 'Evaluating...' : 'Submit'}
-        </button>
-      </form>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#f8fafc', fontFamily: "'Inter', system-ui, sans-serif", padding: '2rem 1rem' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto' }}>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.03em', background: 'linear-gradient(90deg, #60a5fa, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: 8 }}>
+          AI Purchasing Agent
+        </h1>
+        <p style={{ color: '#94a3b8', fontSize: '1.05rem', marginBottom: '2rem' }}>
+          Scenario 1 • Purchase Recommendation Review • LangGraph • Groq
+        </p>
 
-      {error && <pre style={{ color: 'crimson', background: '#fee', padding: 12 }}>{error}</pre>}
+        <form onSubmit={submit} style={{ display: 'flex', gap: 12, alignItems: 'end', background: 'rgba(255,255,255,0.05)', padding: '1.25rem', borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)', marginBottom: '2rem', backdropFilter: 'blur(8px)' }}>
+          <div>
+            <label style={{ display: 'block', fontWeight: 600, fontSize: 13, color: '#cbd5e1', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>SKU</label>
+            <input value={sku} onChange={e => setSku(e.target.value)} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.15)', background: '#0b1220', color: '#f8fafc', fontSize: 15, width: 130 }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontWeight: 600, fontSize: 13, color: '#cbd5e1', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>Quantity</label>
+            <input type="number" value={qty} onChange={e => setQty(e.target.value)} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.15)', background: '#0b1220', color: '#f8fafc', fontSize: 15, width: 100 }} />
+          </div>
+          <button type="submit" disabled={loading} style={{ padding: '10px 22px', borderRadius: 10, border: 'none', background: 'linear-gradient(90deg, #6366f1, #a855f7)', color: '#fff', fontWeight: 700, fontSize: 15, cursor: 'pointer', boxShadow: '0 4px 20px rgba(168,85,247,0.35)' }}>
+            {loading ? 'Evaluating…' : 'Evaluate Purchase'}
+          </button>
+        </form>
 
-      {result && (
-        <div style={{ background: '#f5f5f5', padding: '1rem', borderRadius: 8, border: '1px solid #ddd' }}>
-          <h2>Results</h2>
-          <section style={{ marginBottom: 12 }}>
-            <strong>Final Decision:</strong> <span style={{ fontWeight: 700, color: result.final_decision === 'ACCEPT' ? 'green' : result.final_decision === 'REJECT' ? 'red' : 'orange' }}>{result.final_decision}</span>
-          </section>
-          <section style={{ marginBottom: 12 }}>
-            <strong>Reasoning Trace:</strong>
-            <pre style={{ background: '#fff', padding: 10, overflow: 'auto', maxHeight: 220, border: '1px solid #ccc', fontSize: 13 }}>{JSON.stringify(result.reasoning_trace || [], null, 2)}</pre>
-          </section>
-          <section style={{ marginBottom: 12 }}>
-            <strong>Action Taken:</strong> <pre style={{ background: '#fff', padding: 8, fontSize: 13 }}>{JSON.stringify(result.action_taken || [], null, 2)}</pre>
-          </section>
-          <section>
-            <strong>Validation Result:</strong> <pre style={{ background: '#fff', padding: 8, fontSize: 13 }}>{JSON.stringify(result.validation_result || {}, null, 2)}</pre>
-          </section>
-        </div>
-      )}
+        {error && <div style={{ background: '#fee2e2', color: '#7f1d1d', padding: 14, borderRadius: 12, border: '1px solid #fecaca', marginBottom: 20, fontWeight: 500 }}>{error}</div>}
+
+        {result && (
+          <div style={{ background: 'rgba(255,255,255,0.03)', padding: '2rem', borderRadius: 20, border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', background: decisionColor, padding: '6px 14px', borderRadius: 999, letterSpacing: 0.5, textTransform: 'uppercase' }}>{result.final_decision}</span>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>
+                Final Decision
+              </h2>
+            </div>
+
+            <section style={{ marginBottom: 24 }}>
+              <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: 1, color: '#94a3b8', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 8, marginBottom: 12 }}>Reasoning Trace</h3>
+              <pre style={{ background: '#0b1220', padding: 14, borderRadius: 12, overflow: 'auto', maxHeight: 260, fontSize: 13, lineHeight: 1.6, border: '1px solid rgba(255,255,255,0.06)' }}>
+                {JSON.stringify(result.reasoning_trace || [], null, 2)}
+              </pre>
+            </section>
+
+            <section style={{ marginBottom: 24 }}>
+              <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: 1, color: '#94a3b8', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 8, marginBottom: 12 }}>Action Taken</h3>
+              <pre style={{ background: '#0b1220', padding: 14, borderRadius: 12, fontSize: 13, border: '1px solid rgba(255,255,255,0.06)' }}>{JSON.stringify(result.action_taken || [], null, 2)}</pre>
+            </section>
+
+            <section>
+              <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: 1, color: '#94a3b8', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 8, marginBottom: 12 }}>Validation Outcome</h3>
+              <pre style={{ background: '#0b1220', padding: 14, borderRadius: 12, fontSize: 13, border: '1px solid rgba(255,255,255,0.06)' }}>{JSON.stringify(result.validation_result || {}, null, 2)}</pre>
+            </section>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

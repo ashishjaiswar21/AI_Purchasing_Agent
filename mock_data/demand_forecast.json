@@ -1,0 +1,9 @@
+{
+  "forecast": [
+    {"sku": "SKU-101", "expected_demand_7d": 120, "trend": "up"},
+    {"sku": "SKU-102", "expected_demand_7d": 55, "trend": "stable"},
+    {"sku": "SKU-103", "expected_demand_7d": 30, "trend": "down"},
+    {"sku": "SKU-104", "expected_demand_7d": 10, "trend": "down"},
+    {"sku": "SKU-105", "expected_demand_7d": 250, "trend": "up"}
+  ]
+}

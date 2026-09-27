@@ -1,0 +1,11 @@
+{
+  "budget": {
+    "total_available": 50000,
+    "committed": 42000,
+    "remaining": 8000
+  },
+  "constraints": {
+    "max_single_order": 10000,
+    "require_approval_above": 5000
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "capacity": [
+    {"node_id": "node_west", "used_units": 430, "total_units": 500, "available": 70},
+    {"node_id": "node_east", "used_units": 390, "total_units": 400, "available": 10},
+    {"node_id": "node_central", "used_units": 280, "total_units": 300, "available": 20}
+  ],
+  "notes": "Storage tight at east and central. West has moderate space."
+}

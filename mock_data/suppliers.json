@@ -1,0 +1,8 @@
+{
+  "suppliers": [
+    {"supplier_id": "SUP-A", "name": "Global Supply Corp", "lead_time_days": 14, "min_order_qty": 100, "reliability_score": 0.92},
+    {"supplier_id": "SUP-B", "name": "Rapid Fulfillment", "lead_time_days": 3, "min_order_qty": 20, "reliability_score": 0.78},
+    {"supplier_id": "SUP-C", "name": "Slow Freight Co", "lead_time_days": 30, "min_order_qty": 500, "reliability_score": 0.65},
+    {"supplier_id": "SUP-D", "name": "Mixed Signals Ltd", "lead_time_days": 7, "min_order_qty": 50, "reliability_score": 0.85}
+  ]
+}

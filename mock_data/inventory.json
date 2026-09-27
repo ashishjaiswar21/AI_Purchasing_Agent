@@ -1,0 +1,16 @@
+{
+  "nodes": [
+    {"node_id": "node_west", "location": "West Hub", "capacity_units": 500},
+    {"node_id": "node_east", "location": "East Hub", "capacity_units": 400},
+    {"node_id": "node_central", "location": "Central Hub", "capacity_units": 300}
+  ],
+  "inventory": [
+    {"sku": "SKU-101", "node_id": "node_west", "qty": 45},
+    {"sku": "SKU-101", "node_id": "node_east", "qty": 20},
+    {"sku": "SKU-102", "node_id": "node_west", "qty": 10},
+    {"sku": "SKU-102", "node_id": "node_central", "qty": 5},
+    {"sku": "SKU-103", "node_id": "node_east", "qty": 8},
+    {"sku": "SKU-104", "node_id": "node_central", "qty": 120},
+    {"sku": "SKU-105", "node_id": "node_west", "qty": 200}
+  ]
+}

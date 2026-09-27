@@ -34,6 +34,62 @@
       "qty_ordered": 1,
       "status": "open",
       "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1005",
+      "sku": "SKU-101",
+      "qty_ordered": 490,
+      "status": "open",
+      "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1006",
+      "sku": "SKU-101",
+      "qty_ordered": 30,
+      "status": "open",
+      "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1007",
+      "sku": "SKU-105",
+      "qty_ordered": 40,
+      "status": "open",
+      "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1008",
+      "sku": "SKU-105",
+      "qty_ordered": 30,
+      "status": "open",
+      "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1009",
+      "sku": "SKU-104",
+      "qty_ordered": 1000,
+      "status": "open",
+      "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1010",
+      "sku": "SKU-101",
+      "qty_ordered": 500,
+      "status": "open",
+      "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1011",
+      "sku": "SKU-101",
+      "qty_ordered": 490,
+      "status": "open",
+      "supplier": "SUP-A"
+    },
+    {
+      "po_id": "PO-1012",
+      "sku": "SKU-103",
+      "qty_ordered": 200,
+      "status": "open",
+      "supplier": "SUP-A"
     }
   ]
 }

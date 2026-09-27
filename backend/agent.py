@@ -1,8 +1,10 @@
+import config  # loads dotenv and sets environment variables
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.tools import tool
 
+# Model will read GOOGLE_API_KEY from environment (set by dotenv via config)
 model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 @tool

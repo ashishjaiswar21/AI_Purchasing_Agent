@@ -17,7 +17,9 @@ from tools import (
 # Model setup — reads GOOGLE_API_KEY from .env via config import
 from config import GOOGLE_API_KEY, load_dotenv  # ensures env loaded
 
-model = ChatGoogleGenerativeAI(model="gemini-3.8-flash")
+import os
+MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+model = ChatGoogleGenerativeAI(model=MODEL)
 
 tools = [get_inventory, get_demand_forecast, get_open_purchase_orders,
          get_supplier_info, get_available_budget, get_storage_capacity]

@@ -1,7 +1,6 @@
 fastapi
 uvicorn
 langgraph
-langchain-anthropic
-anthropic
+langchain-google-genai
 pydantic
 python-dotenv

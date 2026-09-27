@@ -17,7 +17,7 @@ from tools import (
 # Model reads GROQ_API_KEY from .env
 import os
 import config
-model = ChatGroq(model="llama-3.3-70b-versatile", api_key=config.GROQ_API_KEY)
+model = ChatGroq(model="qwen/qwen3.8-27b", api_key=config.GROQ_API_KEY)
 
 tools = [get_inventory, get_demand_forecast, get_open_purchase_orders,
          get_supplier_info, get_available_budget, get_storage_capacity]

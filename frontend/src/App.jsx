@@ -1,122 +1,66 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [sku, setSku] = useState('SKU-101');
+  const [qty, setQty] = useState(100);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  async function submit(e) {
+    e.preventDefault();
+    setLoading(true); setResult(null); setError(null);
+    try {
+      const res = await fetch('http://localhost:8000/evaluate-purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sku, quantity: Number(qty), supplier_id: 'SUP-A' }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setResult(await res.json());
+    } catch (e) { setError(e.message); }
+    setLoading(false);
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div style={{ maxWidth: 800, margin: '2rem auto', fontFamily: 'system-ui, sans-serif', padding: '0 1rem' }}>
+      <h1>AI Purchasing Agent — Scenario 1</h1>
+      <form onSubmit={submit} style={{ display: 'flex', gap: 10, alignItems: 'end', marginBottom: '1.5rem' }}>
+        <div>
+          <label>SKU</label><br />
+          <input value={sku} onChange={e => setSku(e.target.value)} style={{ padding: 6, width: 120 }} />
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <label>Quantity</label><br />
+          <input type="number" value={qty} onChange={e => setQty(e.target.value)} style={{ padding: 6, width: 100 }} />
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
+        <button type="submit" disabled={loading} style={{ padding: '6px 16px', cursor: 'pointer' }}>
+          {loading ? 'Evaluating...' : 'Submit'}
         </button>
-      </section>
+      </form>
 
-      <div className="ticks"></div>
+      {error && <pre style={{ color: 'crimson', background: '#fee', padding: 12 }}>{error}</pre>}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {result && (
+        <div style={{ background: '#f5f5f5', padding: '1rem', borderRadius: 8, border: '1px solid #ddd' }}>
+          <h2>Results</h2>
+          <section style={{ marginBottom: 12 }}>
+            <strong>Final Decision:</strong> <span style={{ fontWeight: 700, color: result.final_decision === 'ACCEPT' ? 'green' : result.final_decision === 'REJECT' ? 'red' : 'orange' }}>{result.final_decision}</span>
+          </section>
+          <section style={{ marginBottom: 12 }}>
+            <strong>Reasoning Trace:</strong>
+            <pre style={{ background: '#fff', padding: 10, overflow: 'auto', maxHeight: 220, border: '1px solid #ccc', fontSize: 13 }}>{JSON.stringify(result.reasoning_trace || [], null, 2)}</pre>
+          </section>
+          <section style={{ marginBottom: 12 }}>
+            <strong>Action Taken:</strong> <pre style={{ background: '#fff', padding: 8, fontSize: 13 }}>{JSON.stringify(result.action_taken || [], null, 2)}</pre>
+          </section>
+          <section>
+            <strong>Validation Result:</strong> <pre style={{ background: '#fff', padding: 8, fontSize: 13 }}>{JSON.stringify(result.validation_result || {}, null, 2)}</pre>
+          </section>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;

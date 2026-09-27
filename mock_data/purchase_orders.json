@@ -27,6 +27,13 @@
       "qty_ordered": 50,
       "status": "open",
       "supplier": "SUP-D"
+    },
+    {
+      "po_id": "PO-1004",
+      "sku": "SKU-TEST",
+      "qty_ordered": 1,
+      "status": "open",
+      "supplier": "SUP-A"
     }
   ]
 }

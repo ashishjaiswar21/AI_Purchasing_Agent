@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from config import GOOGLE_API_KEY
 from pydantic import BaseModel
@@ -25,15 +25,20 @@ def health():
 
 @app.post("/evaluate-purchase")
 def evaluate_purchase(req: PurchaseRequest):
-    rec = {"sku": req.sku, "qty": req.quantity, "supplier_id": req.supplier_id}
-    result = run_with_validation(rec, max_retries=2)
-    return {
-        "final_decision": result["final_decision"],
-        "reasoning_trace": result["validation_history"][0]["reasoning_trace"] if result["validation_history"] else [],
-        "action_taken": result["validation_history"][0]["actions"] if result["validation_history"] else [],
-        "validation_result": result["validation_history"][0].get("validation", {}),
-        "retry_history": result["validation_history"]
-    }
+    try:
+        rec = {"sku": req.sku, "qty": req.quantity, "supplier_id": req.supplier_id}
+        result = run_with_validation(rec, max_retries=2)
+        return {
+            "final_decision": result["final_decision"],
+            "reasoning_trace": result["validation_history"][0]["reasoning_trace"] if result["validation_history"] else [],
+            "action_taken": result["validation_history"][0]["actions"] if result["validation_history"] else [],
+            "validation_result": result["validation_history"][0].get("validation", {}),
+            "retry_history": result["validation_history"]
+        }
+    except Exception as e:
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+            raise HTTPException(status_code=503, detail={"error": "Gemini rate limit exceeded", "retry_after_seconds": 25, "message": str(e)})
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
 def root():

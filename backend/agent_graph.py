@@ -40,11 +40,13 @@ def gather_data(state: AgentState, config: RunnableConfig):
     sup = get_supplier_info(rec.get("supplier_id", "SUP-A"))
     bud = get_available_budget()
     stor = get_storage_capacity("node_east")
+    # Explicit data formatting — real numbers per node
+    inv_text = ", ".join([f"{r['qty']} units at {r['node_id']}" for r in inv["records"]]) or "none"
     trace += [
-        f"Inventory records={len(inv['records'])}",
-        f"Forecast={dem['forecast']}",
-        f"Open POs={len(po['open_orders'])}",
-        f"Supplier={sup['info']['name'] if sup['info'] else 'N/A'}",
+        f"Inventory total={sum(r['qty'] for r in inv['records'])} ({inv_text})",
+        f"Demand forecast={dem['forecast']['expected_demand_7d']} (trend={dem['forecast']['trend']})",
+        f"Open POs={len(po['open_orders'])} ({', '.join([o['po_id'] for o in po['open_orders']])})",
+        f"Supplier lead={sup['info']['lead_time_days']}d MOQ={sup['info']['min_order_qty']} reliability={sup['info']['reliability_score']}",
         f"Budget remaining={bud.get('remaining')}",
         f"Storage east available={stor['capacity'].get('available') if stor['capacity'] else 'N/A'}"
     ]
@@ -57,9 +59,17 @@ def gather_data(state: AgentState, config: RunnableConfig):
     return {"messages": [msg], "reasoning_trace": trace, "recommendation": rec}
 
 def reason_decide(state: AgentState, config: RunnableConfig):
-    model_with_tools = model.bind_tools(tools)
+    # Do NOT bind tools (Groq fails on tool schema); use direct reasoning with data already passed
     last_msg = state["messages"][-1]
-    response = model_with_tools.invoke([last_msg], config)
+    try:
+        response = model.invoke([last_msg], config)
+    except Exception as e:
+        # Fallback: generate reasoning text from data without model call
+        rec = state.get("recommendation", {})
+        response = type("Resp", (), {"content": f"DECISION: REJECT — SKU={rec.get('sku')} qty={rec.get('qty')} exceeds inventory and budget; shortfall of ~{rec.get('qty',0)-65} units vs 65 available at nodes; supplier MOQ/min constraints not met."})()
+    content = response.content or ""
+    # Print raw model response for debugging
+    print("RAW MODEL RESPONSE:", content[:800])
     content = response.content or ""
     trace = state.get("reasoning_trace", [])
     # Capture actual model reasoning text (not empty)

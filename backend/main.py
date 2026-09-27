@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from config import GOOGLE_API_KEY
+from config import GROQ_API_KEY
 from pydantic import BaseModel
 from validation_loop import run_with_validation
 
@@ -21,7 +21,7 @@ class PurchaseRequest(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "healthy", "api_key_set": bool(GOOGLE_API_KEY)}
+    return {"status": "healthy", "api_key_set": bool(GROQ_API_KEY)}
 
 @app.post("/evaluate-purchase")
 def evaluate_purchase(req: PurchaseRequest):
@@ -36,10 +36,10 @@ def evaluate_purchase(req: PurchaseRequest):
             "retry_history": result["validation_history"]
         }
     except Exception as e:
-        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
-            raise HTTPException(status_code=503, detail={"error": "Gemini rate limit exceeded", "retry_after_seconds": 25, "message": str(e)})
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "RATE_LIMIT" in str(e).upper():
+            raise HTTPException(status_code=503, detail={"error": "LLM rate limit exceeded", "retry_after_seconds": 25, "message": str(e)})
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
 def root():
-    return {"status": "ok", "api_key_set": bool(GOOGLE_API_KEY)}
+    return {"status": "ok", "api_key_set": bool(GROQ_API_KEY)}

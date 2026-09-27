@@ -1,5 +1,5 @@
 """LangGraph agent for Scenario 1: Purchase Recommendation Review."""
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.memory import MemorySaver
@@ -14,12 +14,10 @@ from tools import (
     get_supplier_info, get_available_budget, get_storage_capacity
 )
 
-# Model setup — reads GOOGLE_API_KEY from .env via config import
-from config import GOOGLE_API_KEY, load_dotenv  # ensures env loaded
-
+# Model reads GROQ_API_KEY from .env
 import os
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-model = ChatGoogleGenerativeAI(model=MODEL)
+import config
+model = ChatGroq(model="llama-3.3-70b-versatile", api_key=config.GROQ_API_KEY)
 
 tools = [get_inventory, get_demand_forecast, get_open_purchase_orders,
          get_supplier_info, get_available_budget, get_storage_capacity]

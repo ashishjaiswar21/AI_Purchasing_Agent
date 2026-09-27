@@ -1,13 +1,13 @@
 import config  # loads dotenv and sets environment variables
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.tools import tool
 
-# Model will read GOOGLE_API_KEY from environment (set by dotenv via config)
+# Model reads GROQ_API_KEY from .env
 import os
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-model = ChatGoogleGenerativeAI(model=MODEL)
+import config
+model = ChatGroq(model="llama-3.3-70b-versatile", api_key=config.GROQ_API_KEY)
 
 @tool
 def search_inventory(query: str) -> str:

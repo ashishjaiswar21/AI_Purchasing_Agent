@@ -5,7 +5,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.tools import tool
 
 # Model will read GOOGLE_API_KEY from environment (set by dotenv via config)
-model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+model = ChatGoogleGenerativeAI(model="gemini-3.8-flash")
 
 @tool
 def search_inventory(query: str) -> str:
